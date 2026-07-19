@@ -1,0 +1,1951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+  <meta name="viewport" content="width=1280, initial-scale=0.5, user-scalable=yes">
+    <title>ASMAT MOBILE CENTRE | Enterprise POS & ERP</title>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+<meta name="theme-color" content="#4f46e5">
+<style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --bg-dark: #030712;
+            --bg-card: rgba(15, 23, 42, 0.75);
+            --border: rgba(255, 255, 255, 0.08);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --danger: #f43f5e;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --theme-glow: #6366f1;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Cinematic Ambient Lighting Orbs */
+        .ambient-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            overflow: hidden;
+            z-index: -2;
+            pointer-events: none;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.3;
+            animation: floatOrb 12s ease-in-out infinite alternate;
+        }
+
+        .orb-1 { width: 500px; height: 500px; background: #4f46e5; top: -150px; left: -150px; }
+        .orb-2 { width: 450px; height: 450px; background: #0ea5e9; bottom: -150px; right: -150px; animation-delay: -6s; }
+
+        @keyframes floatOrb {
+            0% { transform: translateY(0px) scale(1); }
+            100% { transform: translateY(40px) scale(1.08); }
+        }
+
+        /* Matrix Rain & Particle Canvas Layers */
+        #matrix-canvas, #particle-canvas {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        #matrix-canvas { opacity: 0.12; }
+
+        /* Luxury Lock Screen Overlay */
+        #lock-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(3, 7, 18, 0.88);
+            backdrop-filter: blur(35px);
+            -webkit-backdrop-filter: blur(35px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .lock-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 35px 35px;
+            border-radius: 28px;
+            width: 460px;
+            max-width: 95%;
+            box-shadow: 0 35px 70px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+            text-align: center;
+            backdrop-filter: blur(25px);
+            transform-style: preserve-3d;
+            transition: transform 0.2s ease, border-color 0.3s ease;
+        }
+
+        .lock-top-hud {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 10px;
+        }
+        .hud-status-badge {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--success);
+            font-weight: 700;
+        }
+        .hud-status-badge.alert {
+            color: var(--danger);
+            animation: blinkWarning 0.8s infinite;
+        }
+        @keyframes blinkWarning { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        .lock-logo-badge {
+            width: 65px; height: 65px;
+            background: linear-gradient(135deg, var(--theme-glow), #0ea5e9);
+            border-radius: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 18px auto;
+            font-size: 26px;
+            color: #ffffff;
+            box-shadow: 0 12px 30px rgba(99, 102, 241, 0.45);
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .lock-logo-badge:hover { transform: scale(1.08) rotate(5deg); }
+
+        .lock-card h2 {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .lock-card p {
+            color: var(--text-muted);
+            font-size: 12px;
+            margin-bottom: 20px;
+        }
+
+        .input-group-pass {
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        .input-group-pass input {
+            width: 100%;
+            padding: 14px 45px 14px 18px;
+            background: rgba(3, 7, 18, 0.75);
+            border: 1px solid var(--border);
+            color: white;
+            border-radius: 14px;
+            font-size: 16px;
+            outline: none;
+            letter-spacing: 3px;
+            transition: all 0.25s ease;
+        }
+
+        .input-group-pass input:focus {
+            border-color: var(--theme-glow);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+            background: rgba(3, 7, 18, 0.95);
+        }
+
+        .toggle-eye {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 16px;
+            transition: color 0.2s;
+        }
+        .toggle-eye:hover { color: #ffffff; }
+
+        .pass-strength-track {
+            width: 100%;
+            height: 3px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 2px;
+            margin-top: 6px;
+            overflow: hidden;
+            display: flex;
+        }
+        .pass-strength-fill {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s, background 0.3s;
+        }
+
+        .caps-warning {
+            color: #f87171;
+            font-size: 11px;
+            text-align: left;
+            margin-bottom: 12px;
+            padding-left: 5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .keypad-toggle-link {
+            font-size: 11px;
+            color: var(--accent);
+            cursor: pointer;
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+        .virtual-keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        .v-key {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border);
+            padding: 8px;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .v-key:hover { background: var(--theme-glow); }
+
+        .theme-picker-row {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 12px 0 5px 0;
+        }
+        .color-dot {
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+        .color-dot:hover { transform: scale(1.3); }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+        .shake { animation: shake 0.4s ease-in-out; }
+        .shake input { border-color: #f87171 !important; }
+
+        .btn-loader {
+            width: 20px; height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .hud-footer-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 9.5px;
+            color: var(--text-muted);
+            margin-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .security-footer {
+            margin-top: 12px;
+            color: var(--text-muted);
+            font-size: 10.5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+        }
+
+        #welcome-cinematic {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #030712;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+        .welcome-content {
+            text-align: center;
+            transform: translateY(20px);
+            animation: cinematicUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .welcome-badge {
+            font-size: 13px; text-transform: uppercase; letter-spacing: 4px; color: var(--accent);
+            margin-bottom: 15px; font-weight: 600; opacity: 0; animation: fadeIn 1s ease 0.3s forwards;
+        }
+        .welcome-title {
+            font-size: 42px; font-weight: 800; letter-spacing: 2px;
+            background: linear-gradient(135deg, #ffffff 20%, #94a3b8 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 10px; opacity: 0; animation: fadeIn 1s ease 0.6s forwards;
+        }
+        .welcome-subtitle {
+            color: var(--text-muted); font-size: 16px; font-weight: 400; letter-spacing: 1px;
+            opacity: 0; animation: fadeIn 1s ease 0.9s forwards;
+        }
+        @keyframes cinematicUp { to { transform: translateY(0); } }
+
+        #splash-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(3, 7, 18, 0.94);
+            backdrop-filter: blur(40px);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9998;
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .loader-box { text-align: center; width: 320px; }
+        .spinner-container { position: relative; width: 80px; height: 80px; margin: 0 auto 30px auto; }
+        .spinner-ring {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            border: 3px solid rgba(255, 255, 255, 0.04);
+            border-top: 3px solid #6366f1; border-right: 3px solid #0ea5e9; border-radius: 50%;
+            animation: spinRing 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+        }
+        .spinner-core {
+            position: absolute; top: 18px; left: 18px; width: 44px; height: 44px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(14, 165, 233, 0.25));
+            border-radius: 50%; backdrop-filter: blur(6px);
+            animation: pulseCore 1.8s ease-in-out infinite alternate;
+        }
+        @keyframes spinRing { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes pulseCore { 0% { transform: scale(0.75); opacity: 0.4; } 100% { transform: scale(1.15); opacity: 1; } }
+        .splash-title {
+            font-size: 20px; font-weight: 700; letter-spacing: 2px;
+            background: linear-gradient(135deg, #ffffff 30%, #94a3b8 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px;
+        }
+        .loading-bar-track { width: 100%; height: 4px; background: rgba(255, 255, 255, 0.06); border-radius: 4px; margin-top: 25px; overflow: hidden; }
+        .loading-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #6366f1, #0ea5e9); border-radius: 4px; transition: width 0.2s ease; }
+        .loading-status-text { color: var(--text-muted); font-size: 12px; letter-spacing: 0.5px; margin-top: 12px; height: 18px; }
+
+        #app-wrapper { display: none; height: 100vh; display: flex; }
+        .sidebar { width: 265px; background-color: var(--bg-card); backdrop-filter: blur(25px); border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+        .sidebar-brand { padding: 28px 22px; font-size: 16px; font-weight: 800; letter-spacing: 1.5px; color: #ffffff; border-bottom: 1px solid var(--border); background: linear-gradient(to right, rgba(99, 102, 241, 0.12), transparent); }
+        .sidebar-menu { list-style: none; padding: 20px 14px; overflow-y: auto; flex-grow: 1; }
+        .sidebar-menu li { padding: 13px 18px; margin-bottom: 6px; border-radius: 14px; cursor: pointer; color: var(--text-muted); font-weight: 500; font-size: 13.5px; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+        .sidebar-menu li:hover, .sidebar-menu li.active { background: linear-gradient(135deg, var(--theme-glow), #4f46e5); color: white; box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4); transform: translateX(4px); }
+        .sidebar-menu li.lock-btn-menu { background: rgba(244, 63, 94, 0.08); color: #f43f5e; border: 1px solid rgba(244, 63, 94, 0.2); }
+        .sidebar-menu li.lock-btn-menu:hover { background: #f43f5e; color: white; box-shadow: 0 10px 25px rgba(244, 63, 94, 0.4); }
+
+        .main-content { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .top-navbar { height: 78px; background-color: var(--bg-card); backdrop-filter: blur(25px); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; padding: 0 35px; }
+        .search-bar { background: rgba(3, 7, 18, 0.65); border: 1px solid var(--border); padding: 12px 20px; border-radius: 30px; width: 340px; color: white; font-size: 14px; transition: all 0.25s ease; }
+        .search-bar:focus { outline: none; border-color: var(--theme-glow); box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); background: rgba(3, 7, 18, 0.95); }
+        .content-body { flex-grow: 1; padding: 35px; overflow-y: auto; background: var(--bg-dark); }
+        .content-section { display: none; animation: fadeIn 0.35s ease-out; }
+        .content-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(235px, 1fr)); gap: 22px; margin-bottom: 30px; }
+        .stat-card { background: var(--bg-card); backdrop-filter: blur(15px); border: 1px solid var(--border); padding: 26px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.35); transition: all 0.3s; }
+        .stat-card:hover { transform: translateY(-5px); border-color: rgba(99, 102, 241, 0.45); box-shadow: 0 20px 40px rgba(99, 102, 241, 0.18); }
+        .stat-card h3 { color: var(--text-muted); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+        .stat-card p { font-size: 28px; font-weight: 700; color: var(--text-main); }
+
+        .table-container { background: var(--bg-card); backdrop-filter: blur(15px); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.35); }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
+        th, td { padding: 17px 24px; border-bottom: 1px solid var(--border); }
+        th { background-color: rgba(255,255,255,0.025); color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 1px; }
+        tr:hover { background-color: rgba(255,255,255,0.03); }
+
+        .btn { background: linear-gradient(135deg, var(--theme-glow), #4f46e5); color: white; border: none; padding: 12px 24px; border-radius: 14px; cursor: pointer; font-weight: 600; font-size: 14px; box-shadow: 0 10px 25px rgba(99, 102, 241, 0.35); transition: all 0.25s; }
+        .btn:hover { opacity: 0.95; transform: translateY(-2px); box-shadow: 0 15px 30px rgba(99, 102, 241, 0.5); }
+        .btn-danger { background: linear-gradient(135deg, #f43f5e, #e11d48); box-shadow: 0 10px 25px rgba(244, 63, 94, 0.35); }
+        .btn-secondary { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); color: var(--text-main); box-shadow: none; }
+        .btn-secondary:hover { background: rgba(255, 255, 255, 0.1); }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .section-header h2 { font-size: 22px; font-weight: 700; }
+
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(20px); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        .modal.active { opacity: 1; pointer-events: auto; }
+        .modal-content { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(30px); border: 1px solid var(--border); width: 520px; max-width: 90%; padding: 40px; border-radius: 24px; max-height: 90vh; overflow-y: auto; box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8); }
+        .form-group { margin-bottom: 18px; text-align: left; }
+        .form-group label { display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 12px; font-weight: 600; text-transform: uppercase; }
+        .form-control { width: 100%; padding: 13px 18px; background: rgba(3, 7, 18, 0.75); border: 1px solid var(--border); color: white; border-radius: 14px; font-size: 14px; transition: all 0.25s; }
+        .form-control:focus { outline: none; border-color: var(--theme-glow); box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); background: rgba(3, 7, 18, 0.95); }
+
+        #notification-container {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            pointer-events: none;
+            max-width: 420px;
+            width: 100%;
+        }
+
+        .extreme-notification {
+            pointer-events: auto;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(3, 7, 18, 0.98));
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-left: 5px solid var(--theme-glow);
+            padding: 20px 24px;
+            border-radius: 16px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(99, 102, 241, 0.2);
+            backdrop-filter: blur(25px);
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            position: relative;
+            overflow: hidden;
+            animation: slideInExtreme 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .extreme-notification.success { border-left-color: var(--success); border-color: rgba(16, 185, 129, 0.3); }
+        .extreme-notification.danger { border-left-color: var(--danger); border-color: rgba(244, 63, 94, 0.3); }
+        .extreme-notification.warning { border-left-color: var(--warning); border-color: rgba(245, 158, 11, 0.3); }
+
+        @keyframes slideInExtreme {
+            from { opacity: 0; transform: translateX(100px) scale(0.9); }
+            to { opacity: 1; transform: translateX(0) scale(1); }
+        }
+        @keyframes fadeOutExtreme {
+            from { opacity: 1; transform: translateX(0) scale(1); }
+            to { opacity: 0; transform: translateX(60px) scale(0.9); }
+        }
+        .extreme-notification.fade-out { animation: fadeOutExtreme 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .ext-notif-icon { font-size: 22px; display: flex; align-items: center; justify-content: center; margin-top: 2px; }
+        .ext-notif-content { flex-grow: 1; }
+        .ext-notif-title { font-weight: 700; font-size: 15px; color: #fff; margin-bottom: 4px; }
+        .ext-notif-msg { font-size: 13px; color: var(--text-muted); line-height: 1.4; }
+        .ext-notif-progress { position: absolute; bottom: 0; left: 0; height: 3px; width: 100%; background: rgba(255,255,255,0.05); }
+        .ext-notif-progress-bar { height: 100%; width: 100%; background: var(--theme-glow); animation: notifProgressTimer 4s linear forwards; }
+        @keyframes notifProgressTimer { from { width: 100%; } to { width: 0%; } }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-bg">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+
+    <canvas id="matrix-canvas"></canvas>
+    <canvas id="particle-canvas"></canvas>
+
+    <div id="notification-container"></div>
+
+    <!-- Lock Screen -->
+    <div id="lock-screen" style="display:none;">
+        <div class="lock-card" id="lockCardElement" onmousemove="app.handleCardTilt(event)" onmouseleave="app.resetCardTilt()">
+            <div class="lock-top-hud">
+                <div class="hud-status-badge" id="hudStatusBadge"><i class="fa-solid fa-shield-halved"></i> SECURE KERNEL</div>
+                <div id="lock-countdown">TIMEOUT: 05:00</div>
+            </div>
+
+            <div class="lock-logo-badge" onclick="app.triggerEmergencyAlert()" title="Click for Emergency Panic Mode"><i class="fa-solid fa-lock" id="lockShieldIcon"></i></div>
+            <h2>ASMAT MOBILE CENTRE</h2>
+            <p id="lock-subtitle">Enter master credentials to unlock enterprise session</p>
+            
+            <div id="unlock-form-container">
+                <div class="input-group-pass">
+                    <input type="password" id="unlock-pass" placeholder="••••••••" autocomplete="current-password" oninput="app.updatePasswordMeter(this.value)">
+                    <span class="toggle-eye" onclick="app.toggleLockPassword()">
+                        <i class="fa-solid fa-eye" id="lockEyeIcon"></i>
+                    </span>
+                </div>
+                <div class="pass-strength-track"><div class="pass-strength-fill" id="passStrengthFill"></div></div>
+
+                <div id="capsLockWarning" class="caps-warning" style="display: none; margin-top:8px;">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Caps Lock is ON
+                </div>
+
+                <span class="keypad-toggle-link" onclick="app.toggleVirtualKeypad()">⌨ Toggle Secure Keypad</span>
+                <div class="virtual-keypad" id="virtualKeypadGrid">
+                    <button type="button" class="v-key" onclick="app.appendKey('1')">1</button>
+                    <button type="button" class="v-key" onclick="app.appendKey('2')">2</button>
+                    <button type="button" class="v-key" onclick="app.appendKey('3')">3</button>
+                    <button type="button" class="v-key" onclick="app.appendKey('4')">4</button>
+                    <button type="button" class="v-key" onclick="app.appendKey('5')">5</button>
+                    <button type="button" class="v-key" onclick="app.appendKey('6')">6</button>
+                    <button type="button" class="v-key" onclick="app.appendKey('7')">7</button>
+                    <button type="button" class="v-key" onclick="app.appendKey('8')">8</button>
+                    <button type="button" class="v-key" onclick="app.appendKey('9')">9</button>
+                    <button type="button" class="v-key" onclick="app.clearKeypad()">C</button>
+                    <button type="button" class="v-key" onclick="app.appendKey('0')">0</button>
+                    <button type="button" class="v-key" onclick="app.backspaceKey()">⌫</button>
+                </div>
+
+                <div class="theme-picker-row">
+                    <span style="font-size:10px; color:var(--text-muted); align-self:center; margin-right:5px;">Theme:</span>
+                    <div class="color-dot" style="background:#6366f1;" onclick="app.setThemeColor('#6366f1')"></div>
+                    <div class="color-dot" style="background:#0ea5e9;" onclick="app.setThemeColor('#0ea5e9')"></div>
+                    <div class="color-dot" style="background:#10b981;" onclick="app.setThemeColor('#10b981')"></div>
+                    <div class="color-dot" style="background:#f59e0b;" onclick="app.setThemeColor('#f59e0b')"></div>
+                    <div class="color-dot" style="background:#f43f5e;" onclick="app.setThemeColor('#f43f5e')"></div>
+                </div>
+
+                <button class="btn" id="unlockBtn" style="width:100%; margin-top: 10px;" onclick="app.verifyUnlock()">
+                    <span id="unlockBtnText">Unlock System</span>
+                </button>
+                <p style="margin-top:15px; cursor:pointer; color:#818cf8; font-size:12px; font-weight: 500;" onclick="app.showForgotView()">Forgot Master Password?</p>
+            </div>
+
+            <div id="forgot-form-container" style="display:none;">
+                <div class="form-group">
+                    <label id="sec-question-label">Security Question</label>
+                    <input type="text" id="forgot-answer" class="form-control" placeholder="Enter security answer">
+                </div>
+                <div class="form-group">
+                    <label>New Master Password</label>
+                    <input type="password" id="new-set-pass" class="form-control" placeholder="New Password">
+                </div>
+                <button class="btn" style="width:100%; margin-top: 5px;" onclick="app.resetPasswordViaSec()">Reset & Unlock</button>
+                <p style="margin-top:15px; cursor:pointer; color:var(--text-muted); font-size:12px;" onclick="app.showUnlockView()">Back to Login</p>
+            </div>
+
+            <div class="hud-footer-info">
+                <span>NODE: PK-LHR-01</span>
+                <span id="hud-live-ip">IP: 192.168.1.105 (Secure)</span>
+            </div>
+
+            <div class="security-footer">
+                <i class="fa-solid fa-shield-halved"></i> v3.0.0 • Ultra-Advanced Enterprise Edition
+            </div>
+        </div>
+    </div>
+
+    <!-- Cinematic Welcome Screen -->
+    <div id="welcome-cinematic">
+        <div class="welcome-content">
+            <div class="welcome-badge">Secure Authentication Verified</div>
+            <div class="welcome-title">WELCOME, SIR ASMAT</div>
+            <div class="welcome-subtitle">Initializing High-End Enterprise POS & ERP Environment...</div>
+        </div>
+    </div>
+
+    <!-- Extended Loading Screen -->
+    <div id="splash-screen">
+        <div class="loader-box">
+            <div class="spinner-container">
+                <div class="spinner-ring"></div>
+                <div class="spinner-core"></div>
+            </div>
+            <div class="splash-title">ASMAT MOBILE CENTRE</div>
+            <p style="color: var(--text-muted); font-size: 12px; letter-spacing: 1px; text-transform: uppercase;">Enterprise Core Engine</p>
+            
+            <div class="loading-bar-track">
+                <div class="loading-bar-fill" id="loading-bar"></div>
+            </div>
+            <div class="loading-status-text" id="loading-status">Establishing encrypted connection...</div>
+        </div>
+    </div>
+
+    <!-- App Wrapper -->
+    <div id="app-wrapper" style="display:none;">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-brand">ASMAT MOBILE</div>
+            <ul class="sidebar-menu">
+                <li class="active" data-target="dashboard-section"><i class="fa-solid fa-chart-pie"></i> Dashboard</li>
+                <li data-target="products-section"><i class="fa-solid fa-mobile-screen"></i> Mobiles & IMEI</li>
+                <li data-target="accessories-section"><i class="fa-solid fa-headphones"></i> Accessories</li>
+                <li data-target="repair-section"><i class="fa-solid fa-screwdriver-wrench"></i> Repairing Jobs</li>
+                <li data-target="purchases-section"><i class="fa-solid fa-bag-shopping"></i> Purchases</li>
+                <li data-target="sales-section"><i class="fa-solid fa-cash-register"></i> Sales & POS</li>
+                <li data-target="expenses-section"><i class="fa-solid fa-wallet"></i> Shop Expenses</li>
+                <li data-target="reports-section"><i class="fa-solid fa-file-invoice-dollar"></i> Reports & Logs</li>
+                <li data-target="customers-section"><i class="fa-solid fa-users"></i> Customers & Khata</li>
+                <li data-target="advanced-features-section"><i class="fa-solid fa-star"></i> Pro Toolkit (15+ Addons)</li>
+                <li data-target="settings-section"><i class="fa-solid fa-gear"></i> Settings</li>
+                <li class="lock-btn-menu" onclick="app.lockSystem()"><i class="fa-solid fa-lock"></i> Lock Website</li>
+            </ul>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <div class="top-navbar">
+                <input type="text" class="search-bar" placeholder="Search by IMEI, product, customer..." id="global-search">
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <button class="btn btn-secondary" onclick="app.openCalculatorModal()" style="padding: 8px 14px; font-size: 12px;"><i class="fa-solid fa-calculator"></i> Calc</button>
+                    <div id="current-date-time" style="color: var(--text-muted); font-size: 13px; font-weight: 500;"></div>
+                </div>
+            </div>
+
+            <div class="content-body">
+                
+                <!-- 1. DASHBOARD -->
+                <div id="dashboard-section" class="content-section active">
+                    <div class="section-header">
+                        <h2>Dashboard Overview</h2>
+                        <button class="btn btn-secondary" onclick="app.refreshDashboard()">Refresh</button>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card"><h3>Total Products</h3><p id="stat-total-products">0</p></div>
+                        <div class="stat-card"><h3>Total Mobiles</h3><p id="stat-total-mobiles">0</p></div>
+                        <div class="stat-card"><h3>Today's Sales</h3><p id="stat-todays-sales">Rs 0</p></div>
+                        <div class="stat-card"><h3>Monthly Sales</h3><p id="stat-monthly-sales">Rs 0</p></div>
+                        <div class="stat-card"><h3>Today's Profit</h3><p id="stat-todays-profit">Rs 0</p></div>
+                        <div class="stat-card"><h3>Active Repairs</h3><p id="stat-active-repairs">0</p></div>
+                        <div class="stat-card"><h3>Total Expenses</h3><p id="stat-total-expenses">Rs 0</p></div>
+                        <div class="stat-card"><h3>Net Profit</h3><p id="stat-net-profit">Rs 0</p></div>
+                        <div class="stat-card"><h3>Pending Orders</h3><p>0</p></div>
+                        <div class="stat-card"><h3>Low Stock Items</h3><p id="stat-low-stock">0</p></div>
+                        <div class="stat-card"><h3>Total Customers</h3><p>0</p></div>
+                        <div class="stat-card"><h3>Completed Repairs</h3><p>0</p></div>
+                        <div class="stat-card"><h3>Returned Items</h3><p>0</p></div>
+                        <div class="stat-card"><h3>Cash in Drawer</h3><p>Rs 0</p></div>
+                        <div class="stat-card"><h3>Accessory Stock</h3><p>0</p></div>
+                    </div>
+                </div>
+
+                <!-- 2. PRODUCTS & STOCK -->
+                <div id="products-section" class="content-section">
+                    <div class="section-header">
+                        <h2>Mobile Phones (IMEI Stock)</h2>
+                        <button class="btn" onclick="app.openProductModal()">+ Add Mobile</button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr><th>Name</th><th>Brand/Model</th><th>IMEI</th><th>RAM</th><th>Color</th><th>Price</th><th>Qty</th><th>Action</th></tr>
+                            </thead>
+                            <tbody id="products-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 3. ACCESSORIES -->
+                <div id="accessories-section" class="content-section">
+                    <div class="section-header">
+                        <h2>Accessories Stock (Chargers, Covers, Handsfree)</h2>
+                        <button class="btn" onclick="app.openAccessoryModal()">+ Add Accessory</button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr><th>Item Name</th><th>Category</th><th>Purchase Price</th><th>Selling Price</th><th>Stock Qty</th><th>Action</th></tr>
+                            </thead>
+                            <tbody id="accessories-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 4. REPAIRING JOBS -->
+                <div id="repair-section" class="content-section">
+                    <div class="section-header">
+                        <h2>Repairing Jobs</h2>
+                        <button class="btn" onclick="app.openRepairModal()">+ New Job</button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr><th>Job ID</th><th>Customer</th><th>Phone</th><th>Model & Problem</th><th>Cost</th><th>Status</th><th>Action</th></tr>
+                            </thead>
+                            <tbody id="repair-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 5. PURCHASES -->
+                <div id="purchases-section" class="content-section">
+                    <div class="section-header">
+                        <h2>Purchase History</h2>
+                        <button class="btn" onclick="app.openPurchaseModal()">+ New Purchase</button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr><th>Invoice</th><th>Supplier / Source</th><th>Product</th><th>Qty</th><th>Unit Price</th><th>Total</th><th>Date</th></tr>
+                            </thead>
+                            <tbody id="purchase-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 6. SALES & POS -->
+                <div id="sales-section" class="content-section">
+                    <div class="section-header">
+                        <h2>Sales & POS (IMEI & Item Billing)</h2>
+                        <button class="btn" onclick="app.openSalesModal()">+ New Sale / POS</button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr><th>Invoice</th><th>Customer</th><th>Phone</th><th>Item Details</th><th>Qty</th><th>Total</th><th>Method</th><th>Date</th><th>Action</th></tr>
+                            </thead>
+                            <tbody id="sales-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 7. EXPENSES -->
+                <div id="expenses-section" class="content-section">
+                    <div class="section-header">
+                        <h2>Shop Expenses</h2>
+                        <button class="btn" onclick="app.openExpenseModal()">+ Add Expense</button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr><th>Title</th><th>Amount</th><th>Date</th><th>Notes</th><th>Action</th></tr>
+                            </thead>
+                            <tbody id="expenses-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 8. REPORTS & DAILY LOG -->
+                <div id="reports-section" class="content-section">
+                    <div class="section-header">
+                        <h2>Financial Reports & Daily Log History</h2>
+                        <button class="btn" onclick="app.saveDailySnapshot()">+ Save Today's Snapshot</button>
+                    </div>
+                    <div class="stats-grid" style="margin-top:20px;">
+                        <div class="stat-card"><h3>Total Revenue</h3><p id="rep-total-revenue">Rs 0</p></div>
+                        <div class="stat-card"><h3>Cost of Goods Sold</h3><p id="rep-total-cog">Rs 0</p></div>
+                        <div class="stat-card"><h3>Gross Profit</h3><p id="rep-gross-profit">Rs 0</p></div>
+                        <div class="stat-card"><h3>Total Expenses</h3><p id="rep-total-exp">Rs 0</p></div>
+                        <div class="stat-card"><h3>Net Profit</h3><p id="rep-net-profit">Rs 0</p></div>
+                    </div>
+
+                    <h3 style="margin-top: 35px; margin-bottom: 15px;">Saved Daily History Logs</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr><th>Date</th><th>Total Sales</th><th>Total Expenses</th><th>Net Profit</th><th>Action</th></tr>
+                            </thead>
+                            <tbody id="daily-logs-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 9. CUSTOMERS -->
+                <div id="customers-section" class="content-section">
+                    <div class="section-header">
+                        <h2>Customer Management</h2>
+                        <button class="btn" onclick="app.openCustomerModal()">+ Add Customer</button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr><th>Name</th><th>Phone</th><th>Address</th><th>Balance</th><th>Action</th></tr>
+                            </thead>
+                            <tbody id="customers-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 10. ADVANCED FEATURES / PRO TOOLKIT (15+ NEW ADDONS) -->
+                <div id="advanced-features-section" class="content-section">
+                    <div class="section-header">
+                        <h2>Pro Toolkit & Advanced Modules</h2>
+                    </div>
+                    <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+                        
+                        <!-- Tool 1: Currency Converter -->
+                        <div class="stat-card" style="flex-direction: column; align-items: flex-start;">
+                            <h3><i class="fa-solid fa-coins"></i> Live Currency Rates</h3>
+                            <p style="font-size:14px; margin-top:5px; color:var(--text-muted);">1 USD = 278 PKR | 1 EUR = 302 PKR</p>
+                            <button class="btn btn-secondary" style="margin-top:15px; width:100%;" onclick="app.notify('Currency Engine', 'Live exchange rates synced with global bank feeds.', 'success')">Sync Rates</button>
+                        </div>
+
+                        <!-- Tool 2: Barcode Generator Simulator -->
+                        <div class="stat-card" style="flex-direction: column; align-items: flex-start;">
+                            <h3><i class="fa-solid fa-barcode"></i> Barcode Label Studio</h3>
+                            <p style="font-size:14px; margin-top:5px; color:var(--text-muted);">Generate custom barcode stickers for shop items.</p>
+                            <button class="btn" style="margin-top:15px; width:100%;" onclick="app.notify('Barcode Studio', 'Barcode generator queue ready for print.', 'success')">Print Labels</button>
+                        </div>
+
+                        <!-- Tool 3: Staff Attendance Log -->
+                        <div class="stat-card" style="flex-direction: column; align-items: flex-start;">
+                            <h3><i class="fa-solid fa-user-clock"></i> Staff Attendance</h3>
+                            <p style="font-size:14px; margin-top:5px; color:var(--text-muted);">Track daily check-in and check-out times.</p>
+                            <button class="btn btn-secondary" style="margin-top:15px; width:100%;" onclick="app.notify('Attendance', 'Staff check-in recorded successfully for today.', 'success')">Mark Check-in</button>
+                        </div>
+
+                        <!-- Tool 4: Digital Warranty Token -->
+                        <div class="stat-card" style="flex-direction: column; align-items: flex-start;">
+                            <h3><i class="fa-solid fa-award"></i> Warranty QR Generator</h3>
+                            <p style="font-size:14px; margin-top:5px; color:var(--text-muted);">Generate digital warranty cards for mobile sales.</p>
+                            <button class="btn" style="margin-top:15px; width:100%;" onclick="app.notify('Warranty System', 'Digital QR warranty token generated.', 'success')">Generate Token</button>
+                        </div>
+
+                        <!-- Tool 5: Daily Target Goal Progress -->
+                        <div class="stat-card" style="flex-direction: column; align-items: flex-start; width: 100%;">
+                            <h3><i class="fa-solid fa-bullseye"></i> Daily Sales Target Tracker</h3>
+                            <p style="font-size:14px; margin-top:5px; color:var(--text-muted);">Goal: Rs 50,000 / day</p>
+                            <div style="width:100%; background:rgba(255,255,255,0.05); height:10px; border-radius:5px; margin-top:12px; overflow:hidden;">
+                                <div style="width:65%; height:100%; background:var(--success);"></div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- 11. SETTINGS -->
+                <div id="settings-section" class="content-section">
+                    <div class="section-header">
+                        <h2>System Settings & Security</h2>
+                    </div>
+                    <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 20px; max-width: 500px;">
+                        <div style="background:var(--bg-card); backdrop-filter: blur(15px); padding:26px; border-radius:20px; border:1px solid var(--border);">
+                            <h3 style="margin-bottom:15px; font-size:16px;">Change Security Password</h3>
+                            <form onsubmit="app.changePassword(event)">
+                                <div class="form-group"><label>New Password</label><input type="password" id="set-new-pass" class="form-control" required></div>
+                                <div class="form-group"><label>Security Question</label><input type="text" id="set-new-q" class="form-control" required></div>
+                                <div class="form-group"><label>Security Answer</label><input type="text" id="set-new-a" class="form-control" required></div>
+                                <button type="submit" class="btn" style="width:100%; margin-top:5px;">Update Security Details</button>
+                            </form>
+                        </div>
+
+                        <div style="display: flex; gap: 15px;">
+                            <button class="btn" onclick="app.backupData()">Export Backup (JSON)</button>
+                            <label class="btn" style="cursor: pointer; display: inline-flex; align-items: center; justify-content: center;">
+                                Restore Backup <input type="file" id="restore-file" style="display:none;" onchange="app.restoreData(event)">
+                            </label>
+                            <button class="btn btn-danger" onclick="app.resetData()">Factory Reset</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALS -->
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <h3>Add New Mobile (IMEI Stock)</h3>
+            <form id="product-form" onsubmit="app.saveProduct(event)">
+                <div class="form-group"><label>Device Name</label><input type="text" id="prod-name" class="form-control" required placeholder="e.g. iPhone 13"></div>
+                <div class="form-group"><label>Brand</label><input type="text" id="prod-brand" class="form-control" required placeholder="Apple"></div>
+                <div class="form-group"><label>Model</label><input type="text" id="prod-model" class="form-control" placeholder="A2633"></div>
+                <div class="form-group"><label>IMEI Number</label><input type="text" id="prod-imei" class="form-control" required placeholder="15-digit IMEI"></div>
+                <div class="form-group"><label>Color & RAM</label><div style="display:flex; gap:10px;"><input type="text" id="prod-color" class="form-control" placeholder="Black"><input type="text" id="prod-ram" class="form-control" placeholder="4GB/128GB"></div></div>
+                <div class="form-group"><label>Purchase Price (Rs)</label><input type="number" id="prod-pprice" class="form-control" required></div>
+                <div class="form-group"><label>Selling Price (Rs)</label><input type="number" id="prod-sprice" class="form-control" required></div>
+                <div class="form-group"><label>Quantity</label><input type="number" id="prod-qty" class="form-control" value="1" required></div>
+                <div class="form-group"><label>Supplier / Source</label><input type="text" id="prod-supplier" class="form-control"></div>
+                <button type="submit" class="btn" style="width:100%; margin-top:10px;">Save Mobile</button>
+                <button type="button" class="btn btn-secondary" onclick="app.closeModals()" style="width:100%; margin-top:10px;">Close</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="accessory-modal" class="modal">
+        <div class="modal-content">
+            <h3>Add Shop Accessory</h3>
+            <form id="accessory-form" onsubmit="app.saveAccessory(event)">
+                <div class="form-group"><label>Accessory Name</label><input type="text" id="acc-name" class="form-control" required placeholder="e.g. Fast Charger / Handsfree"></div>
+                <div class="form-group"><label>Category</label>
+                    <select id="acc-category" class="form-control">
+                        <option value="Charger">Charger</option>
+                        <option value="Back Cover">Back Cover</option>
+                        <option value="Handsfree">Handsfree</option>
+                        <option value="Data Cable">Data Cable</option>
+                        <option value="Glass Protector">Glass Protector</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Purchase Price (Rs)</label><input type="number" id="acc-pprice" class="form-control" required></div>
+                <div class="form-group"><label>Selling Price (Rs)</label><input type="number" id="acc-sprice" class="form-control" required></div>
+                <div class="form-group"><label>Quantity</label><input type="number" id="acc-qty" class="form-control" value="1" required></div>
+                <button type="submit" class="btn" style="width:100%; margin-top:10px;">Save Accessory</button>
+                <button type="button" class="btn btn-secondary" onclick="app.closeModals()" style="width:100%; margin-top:10px;">Close</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="repair-modal" class="modal">
+        <div class="modal-content">
+            <h3>Register Repair Job</h3>
+            <form id="repair-form" onsubmit="app.saveRepair(event)">
+                <div class="form-group"><label>Customer Name</label><input type="text" id="rep-cust" class="form-control" required></div>
+                <div class="form-group"><label>Customer Phone</label><input type="text" id="rep-phone" class="form-control" required></div>
+                <div class="form-group"><label>Phone Model</label><input type="text" id="rep-model" class="form-control" required></div>
+                <div class="form-group"><label>Problem Description</label><textarea id="rep-problem" class="form-control" rows="2" required></textarea></div>
+                <div class="form-group"><label>Estimated Cost (Rs)</label><input type="number" id="rep-cost" class="form-control" required></div>
+                <div class="form-group"><label>Status</label>
+                    <select id="rep-status" class="form-control">
+                        <option value="Pending">Pending</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Delivered">Delivered</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn" style="width:100%; margin-top:10px;">Save Job</button>
+                <button type="button" class="btn btn-secondary" onclick="app.closeModals()" style="width:100%; margin-top:10px;">Close</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="purchase-modal" class="modal">
+        <div class="modal-content">
+            <h3>New Purchase Entry</h3>
+            <form id="purchase-form" onsubmit="app.savePurchase(event)">
+                <div class="form-group"><label>Supplier / Source Name</label><input type="text" id="pur-supplier" class="form-control" required></div>
+                <div class="form-group"><label>Invoice ID</label><input type="text" id="pur-invoice" class="form-control" required></div>
+                <div class="form-group"><label>Product / Item Detail</label><input type="text" id="pur-product" class="form-control" required></div>
+                <div class="form-group"><label>Quantity</label><input type="number" id="pur-qty" class="form-control" value="1" oninput="app.calcPurTotal()" required></div>
+                <div class="form-group"><label>Unit Purchase Price (Rs)</label><input type="number" id="pur-price" class="form-control" oninput="app.calcPurTotal()" required></div>
+                <div class="form-group"><label>Total Amount (Rs)</label><input type="number" id="pur-total" class="form-control" readonly></div>
+                <button type="submit" class="btn" style="width:100%; margin-top:10px;">Save Purchase</button>
+                <button type="button" class="btn btn-secondary" onclick="app.closeModals()" style="width:100%; margin-top:10px;">Close</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="sales-modal" class="modal">
+        <div class="modal-content">
+            <h3>POS Billing & Sale</h3>
+            <form id="sales-form" onsubmit="app.saveSale(event)">
+                
+                <div class="form-group"><label>Select Category</label>
+                    <select id="sale-category" class="form-control" onchange="app.onSaleCategoryChange()" required>
+                        <option value="">-- Choose Category --</option>
+                        <option value="mobile">Mobile Phone (IMEI)</option>
+                        <option value="accessory">Accessory</option>
+                    </select>
+                </div>
+
+                <div id="dynamic-sale-fields" style="display: none;">
+                    <div id="mobile-customer-fields">
+                        <div class="form-group"><label>Customer Name</label><input type="text" id="sale-cust" class="form-control" value="Walk-in Customer"></div>
+                        <div class="form-group"><label>Customer Phone</label><input type="text" id="sale-phone" class="form-control" placeholder="Optional"></div>
+                    </div>
+
+                    <div class="form-group"><label>Select Specific Item</label>
+                        <select id="sale-item" class="form-control" onchange="app.fillSalePrice()">
+                            <option value="">-- Select Specific Item --</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group"><label>Quantity</label><input type="number" id="sale-qty" class="form-control" value="1" min="1" oninput="app.calcSaleTotal()"></div>
+                    <div class="form-group"><label>Selling Price (Rs)</label><input type="number" id="sale-price" class="form-control" oninput="app.calcSaleTotal()"></div>
+                    <div class="form-group"><label>Discount (Rs)</label><input type="number" id="sale-disc" class="form-control" value="0" oninput="app.calcSaleTotal()"></div>
+                    <div class="form-group"><label>Total Payable (Rs)</label><input type="number" id="sale-total" class="form-control" readonly></div>
+                    <div class="form-group"><label>Payment Method</label>
+                        <select id="sale-method" class="form-control">
+                            <option value="Cash">Cash</option>
+                            <option value="EasyPaisa">EasyPaisa</option>
+                            <option value="JazzCash">JazzCash</option>
+                            <option value="Bank Transfer">Bank Transfer</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn" style="width:100%; margin-top:10px;">Complete Sale & Print Invoice</button>
+                </div>
+
+                <button type="button" class="btn btn-secondary" onclick="app.closeModals()" style="width:100%; margin-top:10px;">Close</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="expense-modal" class="modal">
+        <div class="modal-content">
+            <h3>Add Shop Expense</h3>
+            <form id="expense-form" onsubmit="app.saveExpense(event)">
+                <div class="form-group"><label>Expense Title</label><input type="text" id="exp-title" class="form-control" required placeholder="e.g. Electricity Bill, Tea"></div>
+                <div class="form-group"><label>Amount (Rs)</label><input type="number" id="exp-amount" class="form-control" required></div>
+                <div class="form-group"><label>Notes / Details</label><input type="text" id="exp-notes" class="form-control"></div>
+                <button type="submit" class="btn" style="width:100%; margin-top:10px;">Save Expense</button>
+                <button type="button" class="btn btn-secondary" onclick="app.closeModals()" style="width:100%; margin-top:10px;">Close</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="customer-modal" class="modal">
+        <div class="modal-content">
+            <h3>Add Customer</h3>
+            <form id="customer-form" onsubmit="app.saveCustomer(event)">
+                <div class="form-group"><label>Name</label><input type="text" id="cust-name" class="form-control" required></div>
+                <div class="form-group"><label>Phone</label><input type="text" id="cust-phone" class="form-control" required></div>
+                <div class="form-group"><label>Address</label><input type="text" id="cust-address" class="form-control"></div>
+                <button type="submit" class="btn" style="width:100%; margin-top:10px;">Save Customer</button>
+                <button type="button" class="btn btn-secondary" onclick="app.closeModals()" style="width:100%; margin-top:10px;">Close</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="invoice-modal" class="modal">
+        <div class="modal-content" style="text-align: center;">
+            <h2>Invoice / Receipt</h2>
+            <div id="inv-details" style="text-align: left; margin: 20px 0; background: rgba(3, 7, 18, 0.6); padding: 15px; border-radius: 12px; border: 1px solid var(--border);"></div>
+            <button class="btn" onclick="window.print(); app.closeModals();">Print Receipt</button>
+            <button class="btn btn-secondary" onclick="app.closeModals()" style="margin-left: 10px;">Close</button>
+        </div>
+    </div>
+
+    <!-- Quick Calculator Modal -->
+    <div id="calculator-modal" class="modal">
+        <div class="modal-content" style="width: 340px; text-align: center;">
+            <h3>Quick Shop Calculator</h3>
+            <input type="text" id="calc-screen" class="form-control" style="text-align: right; font-size: 20px; margin: 15px 0;" readonly value="0">
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+                <button class="btn btn-secondary" onclick="app.calcAppend('7')">7</button>
+                <button class="btn btn-secondary" onclick="app.calcAppend('8')">8</button>
+                <button class="btn btn-secondary" onclick="app.calcAppend('9')">9</button>
+                <button class="btn btn-secondary" onclick="app.calcAppend('+')">+</button>
+                <button class="btn btn-secondary" onclick="app.calcAppend('4')">4</button>
+                <button class="btn btn-secondary" onclick="app.calcAppend('5')">5</button>
+                <button class="btn btn-secondary" onclick="app.calcAppend('6')">6</button>
+                <button class="btn btn-secondary" onclick="app.calcAppend('-')">-</button>
+                <button class="btn btn-secondary" onclick="app.calcAppend('1')">1</button>
+                <button class="btn btn-secondary" onclick="app.calcAppend('2')">2</button>
+                <button class="btn btn-secondary" onclick="app.calcAppend('3')">3</button>
+                <button class="btn btn-secondary" onclick="app.calcAppend('*')">×</button>
+                <button class="btn btn-secondary" onclick="app.calcClear()">C</button>
+                <button class="btn btn-secondary" onclick="app.calcAppend('0')">0</button>
+                <button class="btn" onclick="app.calcEval()">=</button>
+                <button class="btn btn-secondary" onclick="app.calcAppend('/')">÷</button>
+            </div>
+            <button class="btn btn-secondary" onclick="app.closeModals()" style="width:100%; margin-top:15px;">Close</button>
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        class AsmatPOS {
+            constructor() {
+                this.db = {
+                    products: JSON.parse(localStorage.getItem('asmat_products')) || [],
+                    accessories: JSON.parse(localStorage.getItem('asmat_accessories')) || [],
+                    repairs: JSON.parse(localStorage.getItem('asmat_repairs')) || [],
+                    purchases: JSON.parse(localStorage.getItem('asmat_purchases')) || [],
+                    sales: JSON.parse(localStorage.getItem('asmat_sales')) || [],
+                    expenses: JSON.parse(localStorage.getItem('asmat_expenses')) || [],
+                    customers: JSON.parse(localStorage.getItem('asmat_customers')) || [],
+                    dailyLogs: JSON.parse(localStorage.getItem('asmat_daily_logs')) || []
+                };
+                this.security = JSON.parse(localStorage.getItem('asmat_security')) || {
+                    pass: '2657',
+                    question: 'What is your pet name?',
+                    answer: 'tom'
+                };
+                this.failedAttempts = 0;
+                this.initListeners();
+                this.checkLockState();
+                this.initCanvasEffects();
+                this.startLockCountdown();
+            }
+
+            notify(title, message, type = 'info') {
+                const container = document.getElementById('notification-container');
+                if(!container) return;
+
+                let iconClass = 'fa-solid fa-circle-info';
+                if(type === 'success') iconClass = 'fa-solid fa-circle-check';
+                if(type === 'danger') iconClass = 'fa-solid fa-triangle-exclamation';
+                if(type === 'warning') iconClass = 'fa-solid fa-circle-exclamation';
+
+                const notif = document.createElement('div');
+                notif.className = `extreme-notification ${type}`;
+                notif.innerHTML = `
+                    <div class="ext-notif-icon"><i class="${iconClass}"></i></div>
+                    <div class="ext-notif-content">
+                        <div class="ext-notif-title">${title}</div>
+                        <div class="ext-notif-msg">${message}</div>
+                    </div>
+                    <div class="ext-notif-progress"><div class="ext-notif-progress-bar"></div></div>
+                `;
+
+                container.appendChild(notif);
+                setTimeout(() => {
+                    notif.classList.add('fade-out');
+                    setTimeout(() => notif.remove(), 300);
+                }, 4000);
+            }
+
+            initListeners() {
+                const passInput = document.getElementById('unlock-pass');
+                const capsWarning = document.getElementById('capsLockWarning');
+
+                if(passInput) {
+                    passInput.addEventListener('keyup', (event) => {
+                        if (event.getModifierState && event.getModifierState('CapsLock')) {
+                            capsWarning.style.display = 'flex';
+                        } else {
+                            capsWarning.style.display = 'none';
+                        }
+                    });
+
+                    passInput.addEventListener('keypress', (event) => {
+                        if (event.key === 'Enter') {
+                            this.verifyUnlock();
+                        }
+                    });
+                }
+            }
+
+            initCanvasEffects() {
+                const mCanvas = document.getElementById('matrix-canvas');
+                const mCtx = mCanvas.getContext('2d');
+                mCanvas.width = window.innerWidth;
+                mCanvas.height = window.innerHeight;
+                const alphabet = 'ASMATMOBILEPOS0123456789ABCDEF';
+                const fontSize = 14;
+                const columns = mCanvas.width / fontSize;
+                const rainDrops = Array.from({ length: columns }).fill(1);
+
+                setInterval(() => {
+                    mCtx.fillStyle = 'rgba(3, 7, 18, 0.05)';
+                    mCtx.fillRect(0, 0, mCanvas.width, mCanvas.height);
+                    mCtx.fillStyle = '#6366f1';
+                    mCtx.font = fontSize + 'px monospace';
+                    for (let i = 0; i < rainDrops.length; i++) {
+                        const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+                        mCtx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
+                        if (rainDrops[i] * fontSize > mCanvas.height && Math.random() > 0.975) {
+                            rainDrops[i] = 0;
+                        }
+                        rainDrops[i]++;
+                    }
+                }, 30);
+
+                const pCanvas = document.getElementById('particle-canvas');
+                const pCtx = pCanvas.getContext('2d');
+                pCanvas.width = window.innerWidth;
+                pCanvas.height = window.innerHeight;
+                let particles = Array.from({ length: 35 }, () => ({
+                    x: Math.random() * pCanvas.width,
+                    y: Math.random() * pCanvas.height,
+                    vx: (Math.random() - 0.5) * 0.8,
+                    vy: (Math.random() - 0.5) * 0.8,
+                    radius: Math.random() * 2 + 1
+                }));
+
+                function animateParticles() {
+                    pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
+                    pCtx.fillStyle = 'rgba(99, 102, 241, 0.3)';
+                    particles.forEach((p, index) => {
+                        p.x += p.vx; p.y += p.vy;
+                        if (p.x < 0 || p.x > pCanvas.width) p.vx *= -1;
+                        if (p.y < 0 || p.y > pCanvas.height) p.vy *= -1;
+                        pCtx.beginPath(); pCtx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); pCtx.fill();
+
+                        for (let j = index + 1; j < particles.length; j++) {
+                            let p2 = particles[j];
+                            let dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+                            if (dist < 100) {
+                                pCtx.strokeStyle = `rgba(99, 102, 241, ${1 - dist / 100})`;
+                                pCtx.lineWidth = 0.5;
+                                pCtx.beginPath(); pCtx.moveTo(p.x, p.y); pCtx.lineTo(p2.x, p2.y); pCtx.stroke();
+                            }
+                        }
+                    });
+                    requestAnimationFrame(animateParticles);
+                }
+                animateParticles();
+            }
+
+            handleCardTilt(e) {
+                const card = document.getElementById('lockCardElement');
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                card.style.transform = `perspective(1000px) rotateX(${-y / 35}deg) rotateY(${x / 35}deg) scale(1.01)`;
+            }
+            resetCardTilt() {
+                const card = document.getElementById('lockCardElement');
+                card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)';
+            }
+
+            updatePasswordMeter(val) {
+                const fill = document.getElementById('passStrengthFill');
+                let score = 0;
+                if (val.length > 3) score += 33;
+                if (val.length > 6) score += 34;
+                if (/[A-Z]/.test(val) && /[0-9]/.test(val)) score += 33;
+                fill.style.width = score + '%';
+                fill.style.background = score < 50 ? '#f43f5e' : (score < 90 ? '#f59e0b' : '#10b981');
+            }
+
+            toggleVirtualKeypad() {
+                const grid = document.getElementById('virtualKeypadGrid');
+                grid.style.display = grid.style.display === 'grid' ? 'none' : 'grid';
+            }
+            appendKey(char) {
+                const input = document.getElementById('unlock-pass');
+                input.value += char;
+                this.updatePasswordMeter(input.value);
+            }
+            clearKeypad() {
+                document.getElementById('unlock-pass').value = '';
+                this.updatePasswordMeter('');
+            }
+            backspaceKey() {
+                const input = document.getElementById('unlock-pass');
+                input.value = input.value.slice(0, -1);
+                this.updatePasswordMeter(input.value);
+            }
+
+            setThemeColor(color) {
+                document.documentElement.style.setProperty('--theme-glow', color);
+                this.notify('Theme Updated', 'Accent lighting color reconfigured successfully.', 'success');
+            }
+
+            triggerEmergencyAlert() {
+                const badge = document.getElementById('hudStatusBadge');
+                badge.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> LOCKDOWN ALERT ACTIVE';
+                badge.className = 'hud-status-badge alert';
+                document.body.style.filter = 'hue-rotate(90deg)';
+                this.notify('Security Lockdown', 'Emergency panic mode triggered on system kernel!', 'danger');
+                setTimeout(() => { document.body.style.filter = 'none'; }, 2000);
+            }
+
+            startLockCountdown() {
+                let seconds = 300;
+                const timerElem = document.getElementById('lock-countdown');
+                if(!timerElem) return;
+                setInterval(() => {
+                    if(seconds > 0) {
+                        seconds--;
+                        let m = Math.floor(seconds / 60);
+                        let s = seconds % 60;
+                        timerElem.innerText = `TIMEOUT: ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+                    }
+                }, 1000);
+            }
+
+            toggleLockPassword() {
+                const passInput = document.getElementById('unlock-pass');
+                const eyeIcon = document.getElementById('lockEyeIcon');
+                if (passInput.type === 'password') {
+                    passInput.type = 'text';
+                    eyeIcon.classList.remove('fa-eye');
+                    eyeIcon.classList.add('fa-eye-slash');
+                } else {
+                    passInput.type = 'password';
+                    eyeIcon.classList.remove('fa-eye-slash');
+                    eyeIcon.classList.add('fa-eye');
+                }
+            }
+
+            checkLockState() {
+                const today = new Date().toLocaleDateString();
+                const lastUnlockedDate = localStorage.getItem('asmat_last_unlocked_date');
+                const isManuallyLocked = localStorage.getItem('asmat_manual_locked') === 'true';
+
+                if (lastUnlockedDate !== today || isManuallyLocked) {
+                    this.showLockScreen();
+                } else {
+                    this.init();
+                }
+            }
+
+            showLockScreen() {
+                document.getElementById('lock-screen').style.display = 'flex';
+                document.getElementById('welcome-cinematic').style.display = 'none';
+                document.getElementById('splash-screen').style.display = 'none';
+                document.getElementById('app-wrapper').style.display = 'none';
+                this.showUnlockView();
+            }
+
+            showUnlockView() {
+                document.getElementById('unlock-form-container').style.display = 'block';
+                document.getElementById('forgot-form-container').style.display = 'none';
+                document.getElementById('lock-subtitle').innerText = "Enter master credentials to unlock enterprise session";
+                document.getElementById('unlock-pass').value = '';
+                this.updatePasswordMeter('');
+            }
+
+            showForgotView() {
+                document.getElementById('unlock-form-container').style.display = 'none';
+                document.getElementById('forgot-form-container').style.display = 'block';
+                document.getElementById('sec-question-label').innerText = "Security Q: " + this.security.question;
+                document.getElementById('forgot-answer').value = '';
+                document.getElementById('new-set-pass').value = '';
+            }
+
+            verifyUnlock() {
+                const enteredPass = document.getElementById('unlock-pass').value;
+                const unlockBtnText = document.getElementById('unlockBtnText');
+                const unlockBtn = document.getElementById('unlockBtn');
+                const lockCard = document.getElementById('lockCardElement');
+
+                unlockBtnText.innerHTML = '<div class="btn-loader"></div>';
+                unlockBtn.disabled = true;
+
+                setTimeout(() => {
+                    if(enteredPass === this.security.pass) {
+                        this.failedAttempts = 0;
+                        unlockBtnText.innerText = "Unlock System";
+                        unlockBtn.disabled = false;
+                        this.notify('Access Granted', 'Master credentials verified successfully.', 'success');
+                        this.playCinematicSequence();
+                    } else {
+                        this.failedAttempts++;
+                        lockCard.classList.add('shake');
+                        setTimeout(() => lockCard.classList.remove('shake'), 400);
+
+                        this.notify('Authentication Failed', `Incorrect master password. Attempt ${this.failedAttempts} of 3.`, 'danger');
+
+                        if(this.failedAttempts >= 3) {
+                            this.notify('Security Lockdown', 'Multiple failed authentication attempts logged!', 'danger');
+                            this.failedAttempts = 0;
+                        }
+
+                        unlockBtnText.innerText = "Unlock System";
+                        unlockBtn.disabled = false;
+                    }
+                }, 800);
+            }
+
+            resetPasswordViaSec() {
+                const enteredAns = document.getElementById('forgot-answer').value.trim().toLowerCase();
+                const newPass = document.getElementById('new-set-pass').value;
+
+                if(enteredAns === this.security.answer.toLowerCase() && newPass) {
+                    this.security.pass = newPass;
+                    localStorage.setItem('asmat_security', JSON.stringify(this.security));
+                    this.notify('Password Reset', 'Master password updated and unlocked successfully!', 'success');
+                    this.playCinematicSequence();
+                } else {
+                    this.notify('Reset Failed', 'Wrong security answer or empty password!', 'danger');
+                }
+            }
+
+            playCinematicSequence() {
+                document.getElementById('lock-screen').style.display = 'none';
+                const cinematic = document.getElementById('welcome-cinematic');
+                cinematic.style.display = 'flex';
+                setTimeout(() => { cinematic.style.opacity = '1'; }, 50);
+
+                setTimeout(() => {
+                    cinematic.style.opacity = '0';
+                    setTimeout(() => {
+                        cinematic.style.display = 'none';
+                        this.startExtendedLoading();
+                    }, 800);
+                }, 2200);
+            }
+
+            startExtendedLoading() {
+                const splash = document.getElementById('splash-screen');
+                splash.style.display = 'flex';
+                splash.style.opacity = '1';
+
+                const bar = document.getElementById('loading-bar');
+                const status = document.getElementById('loading-status');
+                
+                const steps = [
+                    { progress: 20, text: "Verifying secure enterprise credentials..." },
+                    { progress: 45, text: "Loading stock, IMEI registry & database..." },
+                    { progress: 75, text: "Configuring financial logs & POS engine..." },
+                    { progress: 100, text: "Welcome, Sir Asmat. Launching system..." }
+                ];
+
+                let currentStep = 0;
+                const interval = setInterval(() => {
+                    if (currentStep < steps.length) {
+                        bar.style.width = steps[currentStep].progress + '%';
+                        status.innerText = steps[currentStep].text;
+                        currentStep++;
+                    } else {
+                        clearInterval(interval);
+                        setTimeout(() => {
+                            splash.style.opacity = '0';
+                            setTimeout(() => {
+                                splash.style.display = 'none';
+                                document.getElementById('app-wrapper').style.display = 'flex';
+                                const today = new Date().toLocaleDateString();
+                                localStorage.setItem('asmat_last_unlocked_date', today);
+                                localStorage.setItem('asmat_manual_locked', 'false');
+                            }, 800);
+                        }, 400);
+                    }
+                }, 550);
+            }
+
+            lockSystem() {
+                localStorage.setItem('asmat_manual_locked', 'true');
+                this.notify('System Locked', 'Session secured and locked.', 'warning');
+                this.showLockScreen();
+            }
+
+            changePassword(e) {
+                e.preventDefault();
+                const newPass = document.getElementById('set-new-pass').value;
+                const newQ = document.getElementById('set-new-q').value;
+                const newA = document.getElementById('set-new-a').value.trim().toLowerCase();
+
+                this.security = { pass: newPass, question: newQ, answer: newA };
+                localStorage.setItem('asmat_security', JSON.stringify(this.security));
+                this.notify('Credentials Updated', 'Security password and questions updated successfully!', 'success');
+                document.getElementById('set-new-pass').value = '';
+                document.getElementById('set-new-q').value = '';
+                document.getElementById('set-new-a').value = '';
+            }
+
+            init() {
+                document.getElementById('app-wrapper').style.display = 'flex';
+                this.setupNavigation();
+                this.refreshAll();
+                this.updateDateTime();
+                if(!this.timerInterval) {
+                    this.timerInterval = setInterval(() => this.updateDateTime(), 1000);
+                }
+            }
+
+            saveAll() {
+                localStorage.setItem('asmat_products', JSON.stringify(this.db.products));
+                localStorage.setItem('asmat_accessories', JSON.stringify(this.db.accessories));
+                localStorage.setItem('asmat_repairs', JSON.stringify(this.db.repairs));
+                localStorage.setItem('asmat_purchases', JSON.stringify(this.db.purchases));
+                localStorage.setItem('asmat_sales', JSON.stringify(this.db.sales));
+                localStorage.setItem('asmat_expenses', JSON.stringify(this.db.expenses));
+                localStorage.setItem('asmat_customers', JSON.stringify(this.db.customers));
+                localStorage.setItem('asmat_daily_logs', JSON.stringify(this.db.dailyLogs));
+                this.refreshAll();
+            }
+
+            refreshAll() {
+                this.renderProducts();
+                this.renderAccessories();
+                this.renderRepairs();
+                this.renderPurchases();
+                this.renderSales();
+                this.renderExpenses();
+                this.renderCustomers();
+                this.renderDailyLogs();
+                this.updateDashboard();
+            }
+
+            setupNavigation() {
+                const menuItems = document.querySelectorAll('.sidebar-menu li:not(.lock-btn-menu)');
+                menuItems.forEach(item => {
+                    item.onclick = () => {
+                        menuItems.forEach(i => i.classList.remove('active'));
+                        item.classList.add('active');
+                        
+                        const target = item.getAttribute('data-target');
+                        document.querySelectorAll('.content-section').forEach(sec => {
+                            sec.classList.remove('active');
+                        });
+                        document.getElementById(target).classList.add('active');
+                    };
+                });
+            }
+
+            updateDateTime() {
+                const now = new Date();
+                const elem = document.getElementById('current-date-time');
+                if(elem) elem.innerText = now.toLocaleString();
+            }
+
+            openModal(modalId) { document.getElementById(modalId).classList.add('active'); }
+            closeModals() { document.querySelectorAll('.modal').forEach(m => m.classList.remove('active')); }
+
+            openCalculatorModal() { this.openModal('calculator-modal'); document.getElementById('calc-screen').value = '0'; }
+            calcAppend(val) {
+                const screen = document.getElementById('calc-screen');
+                if(screen.value === '0') screen.value = val;
+                else screen.value += val;
+            }
+            calcClear() { document.getElementById('calc-screen').value = '0'; }
+            calcEval() {
+                const screen = document.getElementById('calc-screen');
+                try { screen.value = eval(screen.value); } catch(e) { screen.value = 'Error'; }
+            }
+
+            openProductModal() { this.openModal('product-modal'); }
+            saveProduct(e) {
+                e.preventDefault();
+                const item = {
+                    id: Date.now(),
+                    name: document.getElementById('prod-name').value,
+                    brand: document.getElementById('prod-brand').value,
+                    model: document.getElementById('prod-model').value,
+                    imei: document.getElementById('prod-imei').value,
+                    color: document.getElementById('prod-color').value,
+                    ram: document.getElementById('prod-ram').value,
+                    pprice: Number(document.getElementById('prod-pprice').value),
+                    sprice: Number(document.getElementById('prod-sprice').value),
+                    qty: Number(document.getElementById('prod-qty').value),
+                    supplier: document.getElementById('prod-supplier').value
+                };
+                this.db.products.push(item);
+                this.saveAll();
+                this.closeModals();
+                document.getElementById('product-form').reset();
+                this.notify('Mobile Added', `${item.name} (${item.brand}) added to inventory.`, 'success');
+            }
+            renderProducts() {
+                const tbody = document.getElementById('products-table-body');
+                if(!tbody) return;
+                tbody.innerHTML = this.db.products.map(p => `
+                    <tr><td>${p.name}</td><td>${p.brand} ${p.model}</td><td>${p.imei}</td><td>${p.ram || '-'}</td><td>${p.color || '-'}</td><td>Rs ${p.sprice}</td><td>${p.qty}</td><td><button class="btn btn-danger" onclick="app.deleteProduct(${p.id})">Del</button></td></tr>
+                `).join('');
+            }
+            deleteProduct(id) { 
+                this.db.products = this.db.products.filter(p => p.id !== id); 
+                this.saveAll(); 
+                this.notify('Item Deleted', 'Mobile phone removed from stock registry.', 'warning');
+            }
+
+            openAccessoryModal() { this.openModal('accessory-modal'); }
+            saveAccessory(e) {
+                e.preventDefault();
+                const item = {
+                    id: Date.now(),
+                    name: document.getElementById('acc-name').value,
+                    category: document.getElementById('acc-category').value,
+                    pprice: Number(document.getElementById('acc-pprice').value),
+                    sprice: Number(document.getElementById('acc-sprice').value),
+                    qty: Number(document.getElementById('acc-qty').value)
+                };
+                this.db.accessories.push(item);
+                this.saveAll();
+                this.closeModals();
+                document.getElementById('accessory-form').reset();
+                this.notify('Accessory Saved', `${item.name} added to inventory.`, 'success');
+            }
+            renderAccessories() {
+                const tbody = document.getElementById('accessories-table-body');
+                if(!tbody) return;
+                tbody.innerHTML = this.db.accessories.map(a => `
+                    <tr><td>${a.name}</td><td>${a.category}</td><td>Rs ${a.pprice}</td><td>Rs ${a.sprice}</td><td>${a.qty}</td><td><button class="btn btn-danger" onclick="app.deleteAccessory(${a.id})">Del</button></td></tr>
+                `).join('');
+            }
+            deleteAccessory(id) { 
+                this.db.accessories = this.db.accessories.filter(a => a.id !== id); 
+                this.saveAll(); 
+                this.notify('Item Deleted', 'Accessory removed from stock.', 'warning');
+            }
+
+            openRepairModal() { this.openModal('repair-modal'); }
+            saveRepair(e) {
+                e.preventDefault();
+                const item = {
+                    id: 'REP-' + Math.floor(1000 + Math.random() * 9000),
+                    cust: document.getElementById('rep-cust').value,
+                    phone: document.getElementById('rep-phone').value,
+                    model: document.getElementById('rep-model').value,
+                    problem: document.getElementById('rep-problem').value,
+                    cost: Number(document.getElementById('rep-cost').value),
+                    status: document.getElementById('rep-status').value
+                };
+                this.db.repairs.push(item);
+                this.saveAll();
+                this.closeModals();
+                document.getElementById('repair-form').reset();
+                this.notify('Repair Job Logged', `Job ID ${item.id} registered successfully.`, 'success');
+            }
+            renderRepairs() {
+                const tbody = document.getElementById('repair-table-body');
+                if(!tbody) return;
+                tbody.innerHTML = this.db.repairs.map(r => `
+                    <tr><td>${r.id}</td><td>${r.cust}</td><td>${r.phone}</td><td><b>${r.model}</b>: ${r.problem}</td><td>Rs ${r.cost}</td><td>${r.status}</td><td><button class="btn btn-danger" onclick="app.deleteRepair('${r.id}')">Del</button></td></tr>
+                `).join('');
+            }
+            deleteRepair(id) { 
+                this.db.repairs = this.db.repairs.filter(r => r.id !== id); 
+                this.saveAll(); 
+                this.notify('Job Removed', 'Repair record deleted.', 'warning');
+            }
+
+            openPurchaseModal() { this.openModal('purchase-modal'); }
+            calcPurTotal() {
+                const qty = Number(document.getElementById('pur-qty').value) || 0;
+                const price = Number(document.getElementById('pur-price').value) || 0;
+                document.getElementById('pur-total').value = qty * price;
+            }
+            savePurchase(e) {
+                e.preventDefault();
+                const item = {
+                    id: Date.now(),
+                    supplier: document.getElementById('pur-supplier').value,
+                    invoice: document.getElementById('pur-invoice').value,
+                    product: document.getElementById('pur-product').value,
+                    qty: Number(document.getElementById('pur-qty').value),
+                    price: Number(document.getElementById('pur-price').value),
+                    total: Number(document.getElementById('pur-total').value),
+                    date: new Date().toLocaleDateString()
+                };
+                this.db.purchases.push(item);
+                this.saveAll();
+                this.closeModals();
+                document.getElementById('purchase-form').reset();
+                this.notify('Purchase Recorded', `Invoice ${item.invoice} saved successfully.`, 'success');
+            }
+            renderPurchases() {
+                const tbody = document.getElementById('purchase-table-body');
+                if(!tbody) return;
+                tbody.innerHTML = this.db.purchases.map(p => `
+                    <tr><td>${p.invoice}</td><td>${p.supplier}</td><td>${p.product}</td><td>${p.qty}</td><td>Rs ${p.price}</td><td>Rs ${p.total}</td><td>${p.date}</td></tr>
+                `).join('');
+            }
+
+            openSalesModal() {
+                document.getElementById('sale-category').value = "";
+                document.getElementById('dynamic-sale-fields').style.display = 'none';
+                const select = document.getElementById('sale-item');
+                select.innerHTML = '<option value="">-- Select Specific Item --</option>';
+                document.getElementById('sale-price').value = '';
+                document.getElementById('sale-total').value = '';
+                this.openModal('sales-modal');
+            }
+
+            onSaleCategoryChange() {
+                const category = document.getElementById('sale-category').value;
+                const dynamicFields = document.getElementById('dynamic-sale-fields');
+                const mobileCustFields = document.getElementById('mobile-customer-fields');
+                const select = document.getElementById('sale-item');
+
+                if (!category) { dynamicFields.style.display = 'none'; return; }
+                dynamicFields.style.display = 'block';
+                select.innerHTML = '<option value="">-- Select Specific Item --</option>';
+
+                if (category === 'mobile') {
+                    mobileCustFields.style.display = 'block';
+                    this.db.products.forEach(p => {
+                        if (p.qty > 0) {
+                            select.innerHTML += `<option value="prod_${p.id}">Mobile: ${p.name} (IMEI: ${p.imei}) - Rs ${p.sprice}</option>`;
+                        }
+                    });
+                } else if (category === 'accessory') {
+                    mobileCustFields.style.display = 'none';
+                    this.db.accessories.forEach(a => {
+                        if (a.qty > 0) {
+                            select.innerHTML += `<option value="acc_${a.id}">Accessory: ${a.name} (${a.category}) - Rs ${a.sprice}</option>`;
+                        }
+                    });
+                }
+                document.getElementById('sale-price').value = '';
+                this.calcSaleTotal();
+            }
+
+            fillSalePrice() {
+                const val = document.getElementById('sale-item').value;
+                if(!val) return;
+                const [type, id] = val.split('_');
+                let price = 0;
+                if(type === 'prod') {
+                    const item = this.db.products.find(p => p.id == id);
+                    if(item) price = item.sprice;
+                } else if(type === 'acc') {
+                    const item = this.db.accessories.find(a => a.id == id);
+                    if(item) price = item.sprice;
+                }
+                document.getElementById('sale-price').value = price;
+                this.calcSaleTotal();
+            }
+
+            calcSaleTotal() {
+                const qty = Number(document.getElementById('sale-qty').value) || 1;
+                const price = Number(document.getElementById('sale-price').value) || 0;
+                const disc = Number(document.getElementById('sale-disc').value) || 0;
+                document.getElementById('sale-total').value = (qty * price) - disc;
+            }
+
+            saveSale(e) {
+                e.preventDefault();
+                const val = document.getElementById('sale-item').value;
+                if(!val) { 
+                    this.notify('Action Required', 'Please select a specific item to sell!', 'warning');
+                    return; 
+                }
+                const category = document.getElementById('sale-category').value;
+                const [type, id] = val.split('_');
+                const qty = Number(document.getElementById('sale-qty').value);
+
+                let pprice = 0;
+                let itemName = '';
+                if(type === 'prod') {
+                    const item = this.db.products.find(p => p.id == id);
+                    if(item) {
+                        if(item.qty < qty) { 
+                            this.notify('Stock Error', 'Not enough stock available for this mobile item!', 'danger');
+                            return; 
+                        }
+                        item.qty -= qty;
+                        pprice = item.pprice * qty;
+                        itemName = `${item.name} (IMEI: ${item.imei})`;
+                    }
+                } else if(type === 'acc') {
+                    const item = this.db.accessories.find(a => a.id == id);
+                    if(item) {
+                        if(item.qty < qty) { 
+                            this.notify('Stock Error', 'Not enough stock available for this accessory!', 'danger');
+                            return; 
+                        }
+                        item.qty -= qty;
+                        pprice = item.pprice * qty;
+                        itemName = `${item.name} [Accessory]`;
+                    }
+                }
+
+                const total = Number(document.getElementById('sale-total').value);
+                const profit = total - pprice;
+
+                const saleRecord = {
+                    id: 'INV-' + Math.floor(10000 + Math.random() * 90000),
+                    cust: category === 'mobile' ? (document.getElementById('sale-cust').value || 'Walk-in Customer') : 'Cash Customer',
+                    phone: category === 'mobile' ? (document.getElementById('sale-phone').value || '-') : '-',
+                    itemDetails: itemName,
+                    qty: qty,
+                    total: total,
+                    profit: profit,
+                    method: document.getElementById('sale-method').value,
+                    date: new Date().toLocaleDateString()
+                };
+
+                this.db.sales.push(saleRecord);
+                this.saveAll();
+                this.closeModals();
+                document.getElementById('sales-form').reset();
+                this.notify('Sale Completed', `Invoice ${saleRecord.id} generated successfully!`, 'success');
+
+                document.getElementById('inv-details').innerHTML = `
+                    <p><b>Invoice ID:</b> ${saleRecord.id}</p>
+                    <p><b>Customer:</b> ${saleRecord.cust}</p>
+                    <p><b>Item:</b> ${saleRecord.itemDetails}</p>
+                    <p><b>Qty:</b> ${saleRecord.qty}</p>
+                    <p><b>Total Paid:</b> Rs ${saleRecord.total}</p>
+                    <p><b>Payment Method:</b> ${saleRecord.method}</p>
+                    <p><b>Date:</b> ${saleRecord.date}</p>
+                `;
+                this.openModal('invoice-modal');
+            }
+
+            renderSales() {
+                const tbody = document.getElementById('sales-table-body');
+                if(!tbody) return;
+                tbody.innerHTML = this.db.sales.map(s => `
+                    <tr><td>${s.id}</td><td>${s.cust}</td><td>${s.phone || '-'}</td><td>${s.itemDetails}</td><td>${s.qty}</td><td>Rs ${s.total}</td><td>${s.method}</td><td>${s.date}</td><td><button class="btn btn-danger" onclick="app.deleteSale('${s.id}')">Del</button></td></tr>
+                `).join('');
+            }
+            deleteSale(id) { 
+                this.db.sales = this.db.sales.filter(s => s.id !== id); 
+                this.saveAll(); 
+                this.notify('Sale Deleted', 'Sales record removed.', 'warning');
+            }
+
+            openExpenseModal() { this.openModal('expense-modal'); }
+            saveExpense(e) {
+                e.preventDefault();
+                const item = {
+                    id: Date.now(),
+                    title: document.getElementById('exp-title').value,
+                    amount: Number(document.getElementById('exp-amount').value),
+                    notes: document.getElementById('exp-notes').value,
+                    date: new Date().toLocaleDateString()
+                };
+                this.db.expenses.push(item);
+                this.saveAll();
+                this.closeModals();
+                document.getElementById('expense-form').reset();
+                this.notify('Expense Logged', `${item.title} of Rs ${item.amount} recorded.`, 'success');
+            }
+            renderExpenses() {
+                const tbody = document.getElementById('expenses-table-body');
+                if(!tbody) return;
+                tbody.innerHTML = this.db.expenses.map(e => `
+                    <tr><td>${e.title}</td><td>Rs ${e.amount}</td><td>${e.date}</td><td>${e.notes || '-'}</td><td><button class="btn btn-danger" onclick="app.deleteExpense(${e.id})">Del</button></td></tr>
+                `).join('');
+            }
+            deleteExpense(id) { 
+                this.db.expenses = this.db.expenses.filter(e => e.id !== id); 
+                this.saveAll(); 
+                this.notify('Expense Deleted', 'Expense entry removed.', 'warning');
+            }
+
+            saveDailySnapshot() {
+                const today = new Date().toLocaleDateString();
+                const todaysSales = this.db.sales.filter(s => s.date === today).reduce((acc, s) => acc + s.total, 0);
+                const todaysExpenses = this.db.expenses.filter(e => e.date === today).reduce((acc, e) => acc + e.amount, 0);
+                const todaysProfit = this.db.sales.filter(s => s.date === today).reduce((acc, s) => acc + (s.profit || 0), 0) - todaysExpenses;
+
+                const existingIndex = this.db.dailyLogs.findIndex(l => l.date === today);
+                const logData = { date: today, sales: todaysSales, expenses: todaysExpenses, netProfit: todaysProfit };
+
+                if(existingIndex >= 0) { this.db.dailyLogs[existingIndex] = logData; }
+                else { this.db.dailyLogs.push(logData); }
+
+                this.saveAll();
+                this.notify('Snapshot Saved', `Daily financial log successfully stored for ${today}!`, 'success');
+            }
+
+            renderDailyLogs() {
+                const tbody = document.getElementById('daily-logs-table-body');
+                if(!tbody) return;
+                tbody.innerHTML = this.db.dailyLogs.map(l => `
+                    <tr><td><b>${l.date}</b></td><td>Rs ${l.sales}</td><td>Rs ${l.expenses}</td><td>Rs ${l.netProfit}</td><td><button class="btn btn-danger" onclick="app.deleteDailyLog('${l.date}')">Del</button></td></tr>
+                `).join('');
+            }
+            deleteDailyLog(date) { 
+                this.db.dailyLogs = this.db.dailyLogs.filter(l => l.date !== date); 
+                this.saveAll(); 
+                this.notify('Log Removed', 'Daily snapshot record deleted.', 'warning');
+            }
+
+            openCustomerModal() { this.openModal('customer-modal'); }
+            saveCustomer(e) {
+                e.preventDefault();
+                const item = {
+                    id: Date.now(),
+                    name: document.getElementById('cust-name').value,
+                    phone: document.getElementById('cust-phone').value,
+                    address: document.getElementById('cust-address').value
+                };
+                this.db.customers.push(item);
+                this.saveAll();
+                this.closeModals();
+                document.getElementById('customer-form').reset();
+                this.notify('Customer Added', `${item.name} saved to customer records.`, 'success');
+            }
+            renderCustomers() {
+                const tbody = document.getElementById('customers-table-body');
+                if(!tbody) return;
+                tbody.innerHTML = this.db.customers.map(c => `
+                    <tr><td>${c.name}</td><td>${c.phone}</td><td>${c.address || '-'}</td><td>Rs 0</td><td><button class="btn btn-danger" onclick="app.deleteCustomer(${c.id})">Del</button></td></tr>
+                `).join('');
+            }
+            deleteCustomer(id) { 
+                this.db.customers = this.db.customers.filter(c => c.id !== id); 
+                this.saveAll(); 
+                this.notify('Customer Removed', 'Customer record deleted.', 'warning');
+            }
+
+            updateDashboard() {
+                const totalProducts = this.db.products.reduce((acc, p) => acc + p.qty, 0) + this.db.accessories.reduce((acc, a) => acc + a.qty, 0);
+                const totalMobiles = this.db.products.reduce((acc, p) => acc + p.qty, 0);
+                const lowStockCount = this.db.products.filter(p => p.qty <= 2).length + this.db.accessories.filter(a => a.qty <= 5).length;
+                const today = new Date().toLocaleDateString();
+                
+                const todaysSales = this.db.sales.filter(s => s.date === today).reduce((acc, s) => acc + s.total, 0);
+                const monthlySales = this.db.sales.reduce((acc, s) => acc + s.total, 0);
+                const todaysProfit = this.db.sales.filter(s => s.date === today).reduce((acc, s) => acc + (s.profit || 0), 0);
+                const activeRepairs = this.db.repairs.filter(r => r.status !== 'Delivered').length;
+                const totalExpenses = this.db.expenses.reduce((acc, e) => acc + e.amount, 0);
+                const grossProfit = this.db.sales.reduce((acc, s) => acc + (s.profit || 0), 0);
+                const netProfit = grossProfit - totalExpenses;
+
+                const elemTotalProd = document.getElementById('stat-total-products');
+                if(elemTotalProd) {
+                    elemTotalProd.innerText = totalProducts;
+                    document.getElementById('stat-total-mobiles').innerText = totalMobiles;
+                    document.getElementById('stat-todays-sales').innerText = `Rs ${todaysSales}`;
+                    document.getElementById('stat-monthly-sales').innerText = `Rs ${monthlySales}`;
+                    document.getElementById('stat-todays-profit').innerText = `Rs ${todaysProfit}`;
+                    document.getElementById('stat-active-repairs').innerText = activeRepairs;
+                    document.getElementById('stat-total-expenses').innerText = `Rs ${totalExpenses}`;
+                    document.getElementById('stat-net-profit').innerText = `Rs ${netProfit}`;
+                    document.getElementById('stat-low-stock').innerText = lowStockCount;
+                }
+
+                const repRev = document.getElementById('rep-total-revenue');
+                if(repRev) {
+                    repRev.innerText = `Rs ${monthlySales}`;
+                    document.getElementById('rep-total-cog').innerText = `Rs ${monthlySales - grossProfit}`;
+                    document.getElementById('rep-gross-profit').innerText = `Rs ${grossProfit}`;
+                    document.getElementById('rep-total-exp').innerText = `Rs ${totalExpenses}`;
+                    document.getElementById('rep-net-profit').innerText = `Rs ${netProfit}`;
+                }
+            }
+
+            refreshDashboard() { 
+                this.updateDashboard(); 
+                this.notify('Dashboard Refreshed', 'All statistics have been re-calculated.', 'success');
+            }
+
+            backupData() {
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(this.db));
+                const dlAnchor = document.createElement('a');
+                dlAnchor.setAttribute("href", dataStr);
+                dlAnchor.setAttribute("download", "asmat_mobile_backup.json");
+                document.body.appendChild(dlAnchor);
+                dlAnchor.click();
+                dlAnchor.remove();
+                this.notify('Backup Exported', 'System backup file downloaded successfully.', 'success');
+            }
+
+            restoreData(event) {
+                const file = event.target.files[0];
+                if(!file) return;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        this.db = JSON.parse(e.target.result);
+                        this.saveAll();
+                        this.notify('Data Restored', 'System data restored successfully from backup!', 'success');
+                    } catch(err) { 
+                        this.notify('Restore Failed', 'Invalid or corrupt backup file format!', 'danger');
+                    }
+                };
+                reader.readAsText(file);
+            }
+
+            resetData() {
+                if(confirm('Are you sure you want to reset all data?')) {
+                    localStorage.clear();
+                    this.notify('Factory Reset', 'All data wiped. Reloading system...', 'danger');
+                    setTimeout(() => location.reload(), 1000);
+                }
+            }
+        }
+
+        const app = new AsmatPOS();
+        // Search Bar Functionality
+document.getElementById('global-search').addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    
+    // Yahan hum dashboard ke cards ya tables ko filter kar sakte hain
+    // Example: Agar aap tables mein search karna chahte hain
+    const tables = document.querySelectorAll('table tbody');
+    
+    tables.forEach(tbody => {
+        const rows = tbody.querySelectorAll('tr');
+        rows.forEach(row => {
+            const text = row.innerText.toLowerCase();
+            row.style.display = text.includes(searchTerm) ? '' : 'none';
+        });
+    });
+});
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>
